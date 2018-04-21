@@ -25,5 +25,5 @@ def add_new_user(cursor, user):
     cursor.execute("""
         INSERT INTO "user"
         (username, password, register_time, deleted)
-        VALUES (%(username)s, %(password)s, NOW(), FALSE);
+        VALUES (%(username)s, %(password)s, date_trunc('second', now()), FALSE);
     """, {'username': user["username"], 'password': util.hash_password(user["password"])})
