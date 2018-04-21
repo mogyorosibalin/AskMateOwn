@@ -1,6 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, request
 
-import config
 import data_manager
 import util
 
@@ -16,6 +15,8 @@ def route_home():
 @app.route('/register', methods=['GET', 'POST'])
 def route_register():
     if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
         return render_template('register.html')
 
 
