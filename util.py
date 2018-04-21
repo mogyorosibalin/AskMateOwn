@@ -1,5 +1,7 @@
-import data_manager
 from flask import session
+import bcrypt
+
+import data_manager
 
 
 def get_data_from_session(label):
@@ -30,3 +32,8 @@ def get_registration_error_messages(user):
     if user["password"] != user["password_again"]:
         error_messages.append('The two Password must be the same!')
     return error_messages
+
+
+def hash_password(plain_text_password):
+    hashed_bytes = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_bytes.decode('utf-8')
