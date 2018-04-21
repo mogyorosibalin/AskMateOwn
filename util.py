@@ -1,4 +1,13 @@
 import data_manager
+from flask import session
+
+
+def get_data_from_session(label):
+    data = None
+    if label in session:
+        data = session[label]
+        session.pop(label, None)
+    return data
 
 
 def get_dict_from_request(form_data):
