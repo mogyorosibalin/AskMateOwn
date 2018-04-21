@@ -27,4 +27,3 @@ def add_new_user(cursor, user):
         (username, password, register_time, deleted)
         VALUES (%(username)s, %(password)s, NOW(), FALSE);
     """, {'username': user["username"], 'password': util.hash_password(user["password"])})
-    return cursor.fetchall()
