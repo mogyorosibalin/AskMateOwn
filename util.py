@@ -37,3 +37,16 @@ def get_registration_error_messages(user):
 def hash_password(plain_text_password):
     hashed_bytes = bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt())
     return hashed_bytes.decode('utf-8')
+
+
+def verify_password(plain_text_password, hashed_password):
+    hashed_bytes_password = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)
+
+
+def get_login_error_messages(user):
+    database_user = data_manager.get_single_user_by_name(user["username"])[0]
+    if database_user:
+        if verify_password(user["password"], database_user["password"]):
+            return []
+    return ['The Username and/or Password is incorrect!']
