@@ -3,6 +3,15 @@ import util
 
 
 @connection.connection_handler
+def get_all_user(cursor):
+    cursor.execute("""
+        SELECT * FROM "user"
+        ORDER BY username;
+    """)
+    return cursor.fetchall()
+
+
+@connection.connection_handler
 def get_single_user(cursor, user_id):
     cursor.execute("""
         SELECT * FROM "user"
