@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>All User</h2>
+    <section class="users">
+        {% for user in users %}
+            <article class="user">
+                <h4 class="user-username">{{ user.username }}</h4>
+                <p class="user-reputation"></p>
+                <p class="user-questions"></p>
+                <p class="user-answers"></p>
+                <p class="user-comments"></p>
+            </article>
+        {% else %}
+            <article>
+                There is no users in the database.
+            </article>
+        {% endfor %}
+    </section>
+{% endblock %}
