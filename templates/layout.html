@@ -2,12 +2,16 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
         <title>AskMate | {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     </head>
     <body>
         <header class="page-header">
+            <a href="/" class="logo">LOGO</a>
             <nav class="page-menu">
-                <a href="/">LOGO</a>
                 <ul>
                     <li><a href="/home">Home</a></li>
                     <li><a href="#">Questions</a></li>
@@ -26,6 +30,9 @@
                     {% endif %}
                 </ul>
             </nav>
+            <div class="page-menu-handler"><i class="fa fa-bars"></i></div>
+            <div class="user-menu-handler"><i class="fa fa-user"></i></div>
+            <div class="overlay"></div>
         </header>
         <main class="page-content">
             {% block content %}{% endblock %}
@@ -33,5 +40,6 @@
         <footer class="page-footer">
             <p>&copy; 2018 by Balint Mogyorosi</p>
         </footer>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>
