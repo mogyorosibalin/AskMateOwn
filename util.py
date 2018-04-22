@@ -4,11 +4,12 @@ import bcrypt
 import data_manager
 
 
-def get_data_from_session(label):
+def get_data_from_session(label, pop=True):
     data = None
     if label in session:
         data = session[label]
-        session.pop(label, None)
+        if pop:
+            session.pop(label, None)
     return data
 
 
