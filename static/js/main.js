@@ -13,3 +13,9 @@ $('.page-header .overlay').on('click', function() {
     $('.page-header .user-menu').removeClass('active');
     $(this).removeClass('active');
 });
+
+$('.form-group input').focusin(function() {
+   $(this).parent().addClass('active');
+}).focusout(function() {
+    $(this).parent().removeClass('active');
+});
