@@ -106,3 +106,12 @@ def delete_answers_by_question_id(cursor, question_id):
         SET deleted = TRUE 
         WHERE question_id = %(id)s;
     """, {'id': question_id})
+
+
+@connection.connection_handler
+def edit_question(cursor, question_id, question):
+    cursor.execute("""
+        UPDATE question
+        SET title = %(title)s, message = %(message)s
+        WHERE id = %(id)s;
+    """, {'title': question["title"], 'message': question["message"], 'id': question_id})

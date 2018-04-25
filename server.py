@@ -126,5 +126,30 @@ def route_delete_question(question_id=None):
     return redirect('/list')
 
 
+@app.route('/question/<question_id>/edit', methods=['GET', 'POST'])
+def route_edit_question(question_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    if request.method == 'GET':
+        question = data_manager.get_single_question_by_id(question_id)
+        if len(question) == 1:
+            if question[0]["user_id"] == user_logged_in["id"]:
+                question = question[0]
+                answers = data_manager.get_all_answers_for_question(question_id)
+                return render_template('question.html', question=question, answers=answers,
+                                       editing_question=True, user_logged_in=user_logged_in)
+            return redirect('/question/{}'.format(question_id))
+        return redirect('/list')
+    elif request.method == 'POST':
+        question = util.get_dict_from_request(request.form)
+        error_messages = util.get_new_question_error_messages(question)
+        if len(error_messages) == 0:
+            data_manager.edit_question(question_id, question)
+            return redirect('/question/{}'.format(question_id))
+        else:
+            session["question"] = question
+            session["error_messages"] = error_messages
+            return redirect('/question/{}/edit'.format(question_id))
+
+
 if __name__ == "__main__":
     app.run()

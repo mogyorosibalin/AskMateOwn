@@ -2,35 +2,61 @@
 {% block title %}Questions{% endblock %}
 {% block content %}
     <section class="questions">
-        <article class="question">
-            <main class="question-main">
-                <h4 class="question-title">{{ question.title }}</h4>
-                <ul class="question-tags">
-                    {% for tag in question.tags %}
-                        <li class="question-tag">Tag</li>
-                    {% endfor %}
-                </ul>
-                <p class="question-message">{{ question.message }}</p>
-                <small class="question-details">
-                    Submitted on
-                    <span class="question-submission-time">{{ question.submission_time }}</span>
-                    by
-                    <span class="question-user">{{ question.username }}</span>
-                </small>
-                <footer class="question-buttons">
-                    {% if question.user_id == user_logged_in.id %}
-                        <a class="button" href="/question/{{ question.id }}/delete">Delete</a>
-                    {% endif %}
-                </footer>
-            </main>
-            <aside class="question-aside">
-                <ul class="question-numbers">
-                    <li class="question-views">Views: {{ question.view_number }}</li>
-                    <li class="question-votes">Votes: {{ question.vote_number }}</li>
-                    <li class="question-answers">Answers: {{ question.answer_number }}</li>
-                </ul>
-            </aside>
-        </article>
+        {% if editing_question %}
+            <section class="form edit-question-form">
+                <h3>Edit Question</h3>
+                {% if error_messages %}
+                    <article class="error-messages">
+                        {% for message in error_messages %}
+                            <strong class="error-message">{{ message }}</strong>
+                        {% endfor %}
+                    </article>
+                {% endif %}
+                <form action="/question/{{ question.id }}/edit" method="POST">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" placeholder="Title" value="{{ question.title }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" row="4" name="message" placeholder="Message ...">{{ question.message }}</textarea>
+                    </div>
+                    <button type="submit" class="button">Edit</button>
+                    <a href="/question/{{ question.id }}" class="button button-outline">Cancel</a>
+                </form>
+            </section>
+        {% else %}
+            <article class="question">
+                <main class="question-main">
+                    <h4 class="question-title">{{ question.title }}</h4>
+                    <ul class="question-tags">
+                        {% for tag in question.tags %}
+                            <li class="question-tag">Tag</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="question-message">{{ question.message }}</p>
+                    <small class="question-details">
+                        Submitted on
+                        <span class="question-submission-time">{{ question.submission_time }}</span>
+                        by
+                        <span class="question-user">{{ question.username }}</span>
+                    </small>
+                    <footer class="question-buttons">
+                        {% if question.user_id == user_logged_in.id %}
+                            <a class="button" href="/question/{{ question.id }}/edit">Edit</a>
+                            <a class="button" href="/question/{{ question.id }}/delete">Delete</a>
+                        {% endif %}
+                    </footer>
+                </main>
+                <aside class="question-aside">
+                    <ul class="question-numbers">
+                        <li class="question-views">Views: {{ question.view_number }}</li>
+                        <li class="question-votes">Votes: {{ question.vote_number }}</li>
+                        <li class="question-answers">Answers: {{ question.answer_number }}</li>
+                    </ul>
+                </aside>
+            </article>
+        {% endif %}
     </section>
     <section class="answers">
         {% for answer in answers %}
