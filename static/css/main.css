@@ -66,6 +66,8 @@ p {
     background-color: #DCD0C0;
     outline: none;
     cursor: pointer;
+    color: #373737;
+    text-decoration: none;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
@@ -77,11 +79,12 @@ p {
 .button.button-outline {
     background-color: transparent;
     border: 1px solid #595959;
+    color: #595959;
 }
 
 .button.button-outline:hover {
     background-color: #595959;
-    color: transparent;
+    color: #F4F4F4;
 }
 
 
@@ -205,7 +208,7 @@ p {
 }
 .form .form-group.active label { color: #C0B283; }
 
-.form .form-group input {
+.form .form-group input, .form .form-group textarea {
     display: block;
     outline: none;
     padding: 10px 5px;
@@ -214,8 +217,9 @@ p {
     border: 1px solid #373737;
     font-size: 16px;
     transition: border-color 0.2s ease-in-out;
+    resize: vertical;
 }
-.form .form-group.active input { border-color: #C0B283; }
+.form .form-group.active input, .form .form-group.active textarea { border-color: #C0B283; }
 
 /* ----- FOOTER STYLE ----- */
 .page-footer {
