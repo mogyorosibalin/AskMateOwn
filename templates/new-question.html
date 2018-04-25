@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}New Question{% endblock %}
+{% block content %}
+    <section class="form new-question-form">
+        <h3>Ask a Question</h3>
+        {% if error_messages %}
+            <article class="error-messages">
+                {% for message in error_messages %}
+                    <strong class="error-message">{{ message }}</strong>
+                {% endfor %}
+            </article>
+        {% endif %}
+        <form action="/new-question" method="POST">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" placeholder="Title" value="{{ question.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" row="4" name="message" placeholder="Message ...">{{ question.message }}</textarea>
+            </div>
+            <button type="submit" class="button">Ask New</button>
+            <a href="/list" class="button button-outline">Cancel</a>
+        </form>
+    </section>
+{% endblock %}

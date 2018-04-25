@@ -14,7 +14,7 @@
             <nav class="page-menu">
                 <ul>
                     <li><a href="/home">Home</a></li>
-                    <li><a href="#">Questions</a></li>
+                    <li><a href="/list">Questions</a></li>
                     <li><a href="#">Contact</a></li>
                     <li><a href="#">About</a></li>
                 </ul>
@@ -22,7 +22,7 @@
             <nav class="user-menu">
                 <ul>
                     {% if user_logged_in %}
-                        <li><a href="#">{{ user_logged_in }}</a></li>
+                        <li><a href="/user/{{ user_logged_in.username }}">{{ user_logged_in.username }}</a></li>
                         <li><a href="/logout">Log Out</a></li>
                     {% else %}
                         <li><a href="/login">Log In</a></li>

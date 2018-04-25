@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}Questions{% endblock %}
+{% block content %}
+    {% if user_logged_in %}
+        <a href="/new-question" class="button">Ask a Question</a>
+    {% endif %}
+    <section class="questions">
+        {% for question in questions %}
+            <article class="question">
+                <main class="question-main">
+                    <h4 class="question-title"><a href="/question/{{ question.id }}">{{ question.title }}</a></h4>
+                    <ul class="question-tags">
+                        {% for tag in question.tags %}
+                            <li class="question-tag">Tag</li>
+                        {% endfor %}
+                    </ul>
+                    <small class="question-details">
+                        Submitted on
+                        <span class="question-submission-time">{{ question.submission_time }}</span>
+                        by
+                        <span class="question-user">{{ question.username }}</span>
+                    </small>
+                </main>
+                <aside class="question-aside">
+                    <ul class="question-numbers">
+                        <li class="question-views">Views: {{ question.view_number }}</li>
+                        <li class="question-votes">Votes: {{ question.vote_number }}</li>
+                        <li class="question-answers">Answers: {{ question.answer_number }}</li>
+                    </ul>
+                </aside>
+            </article>
+        {% else %}
+            <p>There are no questions in the database.</p>
+        {% endfor %}
+    </section>
+{% endblock %}
