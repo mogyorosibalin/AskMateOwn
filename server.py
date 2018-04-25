@@ -112,5 +112,18 @@ def route_display_question(question_id=None):
                            user_logged_in=util.get_data_from_session("user", False))
 
 
+@app.route('/question/<question_id>/delete')
+def route_delete_question(question_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    question = data_manager.get_single_question_by_id(question_id)
+    if len(question) == 1:
+        if question[0]["user_id"] == user_logged_in["id"]:
+            data_manager.delete_question_by_id(question_id)
+            data_manager.delete_answers_by_question_id(question_id)
+            return redirect('/list')
+        return redirect('/question/{}'.format(question_id))
+    return redirect('/list')
+
+
 if __name__ == "__main__":
     app.run()

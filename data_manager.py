@@ -45,8 +45,9 @@ def get_all_questions(cursor):
         FROM ((question
         INNER JOIN "user" ON question.user_id = "user".id)
         LEFT OUTER JOIN answer ON answer.question_id = question.id)
+        WHERE question.deleted is FALSE
         GROUP BY question.id, "user".username
-        ORDER BY question.submission_time;
+        ORDER BY question.submission_time DESC;
     """)
     return cursor.fetchall()
 
@@ -58,7 +59,7 @@ def get_single_question_by_id(cursor, question_id):
         FROM ((question
         INNER JOIN "user" ON question.user_id = "user".id)
         LEFT OUTER JOIN answer ON answer.question_id = question.id)
-        WHERE question.id = %(question_id)s
+        WHERE question.id = %(question_id)s AND question.deleted is FALSE
         GROUP BY question.id, "user".username, "user".id
         ORDER BY question.submission_time;
     """, {'question_id': question_id})
@@ -87,3 +88,21 @@ def add_new_question(cursor, question):
         RETURNING id;
     """, {'title': question["title"], 'message': question["message"], 'user_id': question["user_id"]})
     return cursor.fetchall()
+
+
+@connection.connection_handler
+def delete_question_by_id(cursor, question_id):
+    cursor.execute("""
+        UPDATE question
+        SET deleted = TRUE 
+        WHERE id = %(id)s;
+    """, {'id': question_id})
+
+
+@connection.connection_handler
+def delete_answers_by_question_id(cursor, question_id):
+    cursor.execute("""
+        UPDATE answer
+        SET deleted = TRUE 
+        WHERE question_id = %(id)s;
+    """, {'id': question_id})
