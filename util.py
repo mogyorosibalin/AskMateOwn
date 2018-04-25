@@ -51,3 +51,12 @@ def get_login_error_messages(user):
         if verify_password(user["password"], database_user["password"]):
             return []
     return ['The Username and/or Password is incorrect!']
+
+
+def get_new_question_error_messages(question):
+    error_messages = list()
+    if len(question["title"]) < 10:
+        error_messages.append('The Title must contain at least 10 characters!')
+    if len(question["message"]) < 20:
+        error_messages.append('The Message must contain at least 20 characters!')
+    return error_messages
