@@ -179,5 +179,17 @@ def route_new_answer(question_id=None):
             return redirect('/question/{}/new-answer'.format(question_id))
 
 
+@app.route('/answer/<answer_id>/delete')
+def route_delete_answer(answer_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    answer = data_manager.get_single_answer_by_id(answer_id)
+    if len(answer) == 1:
+        question_id = answer[0]["question_id"]
+        if answer[0]["user_id"] == user_logged_in["id"]:
+            data_manager.delete_answer_by_id(answer_id)
+        return redirect('/question/{}'.format(question_id))
+    return redirect('/list')
+
+
 if __name__ == "__main__":
     app.run()

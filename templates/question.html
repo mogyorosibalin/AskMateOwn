@@ -95,7 +95,7 @@
                     </small>
                     <footer class="answer-buttons">
                         {% if answer.user_id == user_logged_in.id %}
-                            <a class="button" href="#">Delete</a>
+                            <a class="button" href="/answer/{{ answer.id }}/delete">Delete</a>
                         {% endif %}
                     </footer>
                 </main>
