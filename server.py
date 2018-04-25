@@ -11,7 +11,8 @@ app.secret_key = "RandomSecretKeyForTestingOnThe__Localhost"
 @app.route('/')
 @app.route('/home')
 def route_home():
-    return render_template('home.html', user_logged_in=util.get_data_from_session("user", False))
+    questions = data_manager.get_all_questions()[:5]
+    return render_template('home.html', questions=questions, user_logged_in=util.get_data_from_session("user", False))
 
 
 @app.route('/register', methods=['GET', 'POST'])

@@ -3,21 +3,32 @@
 {% block content %}
     <section class="hero-image"></section>
     <section class="questions">
-        <article class="question">
-            <main class="question-main">
-                <h4 class="question-title"></h4>
-                <ul class="question-tags">
-                    <li class="question-tag"></li>
-                </ul>
-                <small class="question-details"></small>
-            </main>
-            <aside class="question-aside">
-                <ul class="question-numbers">
-                    <li class="question-views"></li>
-                    <li class="question-votes"></li>
-                    <li class="question-answers"></li>
-                </ul>
-            </aside>
-        </article>
+        {% for question in questions %}
+            <article class="question">
+                <main class="question-main">
+                    <h4 class="question-title"><a href="/question/{{ question.id }}">{{ question.title }}</a></h4>
+                    <ul class="question-tags">
+                        {% for tag in question.tags %}
+                            <li class="question-tag">Tag</li>
+                        {% endfor %}
+                    </ul>
+                    <small class="question-details">
+                        Submitted on
+                        <span class="question-submission-time">{{ question.submission_time }}</span>
+                        by
+                        <span class="question-user">{{ question.username }}</span>
+                    </small>
+                </main>
+                <aside class="question-aside">
+                    <ul class="question-numbers">
+                        <li class="question-views">Views: {{ question.view_number }}</li>
+                        <li class="question-votes">Votes: {{ question.vote_number }}</li>
+                        <li class="question-answers">Answers: {{ question.answer_number }}</li>
+                    </ul>
+                </aside>
+            </article>
+        {% else %}
+            <p>There are no questions in the database.</p>
+        {% endfor %}
     </section>
 {% endblock %}
