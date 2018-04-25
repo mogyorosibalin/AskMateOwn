@@ -74,7 +74,7 @@ def get_all_answers_for_question(cursor, question_id):
         INNER JOIN question ON answer.question_id = question.id)
         INNER JOIN "user" ON answer.user_id = "user".id)
         WHERE answer.question_id = %(question_id)s
-        ORDER BY answer.submission_time;
+        ORDER BY answer.submission_time DESC;
     """, {'question_id': question_id})
     return cursor.fetchall()
 
@@ -115,3 +115,12 @@ def edit_question(cursor, question_id, question):
         SET title = %(title)s, message = %(message)s
         WHERE id = %(id)s;
     """, {'title': question["title"], 'message': question["message"], 'id': question_id})
+
+
+@connection.connection_handler
+def add_new_answer(cursor, question_id, answer, user_id):
+    cursor.execute("""
+        INSERT INTO answer
+        (submission_time, vote_number, question_id, message, user_id)
+        VALUES (date_trunc('second', now()), 0, %(question_id)s, %(message)s, %(user_id)s); 
+    """, {'question_id': question_id, 'message': answer['message'], 'user_id': user_id})

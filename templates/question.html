@@ -59,6 +59,30 @@
         {% endif %}
     </section>
     <section class="answers">
+        {% if user_logged_in %}
+            {% if new_answer %}
+                <section class="form new-question-form">
+                    <h3>Add Answer</h3>
+                    {% if error_messages %}
+                        <article class="error-messages">
+                            {% for message in error_messages %}
+                                <strong class="error-message">{{ message }}</strong>
+                            {% endfor %}
+                        </article>
+                    {% endif %}
+                    <form action="/question/{{ question.id }}/new-answer" method="POST">
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" row="4" name="message" placeholder="Message ...">{{ answer.message }}</textarea>
+                        </div>
+                        <button type="submit" class="button">Answer</button>
+                        <a href="/question/{{ question.id }}" class="button button-outline">Cancel</a>
+                    </form>
+                </section>
+            {% else %}
+                <a href="/question/{{ question.id }}/new-answer" class="button">Add Answer</a>
+            {% endif %}
+        {% endif %}
         {% for answer in answers %}
             <article class="answer">
                 <main class="answer-main">

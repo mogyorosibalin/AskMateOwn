@@ -60,3 +60,9 @@ def get_new_question_error_messages(question):
     if len(question["message"]) < 20:
         error_messages.append('The Message must contain at least 20 characters!')
     return error_messages
+
+
+def get_new_answer_error_messages(answer):
+    if len(answer["message"]) < 10:
+        return ['The answer must contain at least 10 characters!']
+    return []
