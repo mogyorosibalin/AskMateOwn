@@ -68,7 +68,9 @@
                                 <small>{{ comment.username }} at {{ comment.submission_time }}. Edited {{ comment.edited_count }} times.</small>
                             </div>
                             {% if comment.username == user_logged_in.username %}
-                                E D
+                                <aside class="comment-buttons">
+                                    <a class="button cta-btn" onclick="delete_comment({{ question.id }}, {{ comment.id }})"><i class="fa fa-trash"></i></a>
+                                </aside>
                             {% endif %}
                         </article>
                     {% else %}
@@ -136,12 +138,14 @@
                 <article class="comments">
                     {% for comment in answer.comments %}
                         <article class="comment">
-                            <div class="comment-details">
+                            <main class="comment-details">
                                 <p class="comment-message">{{ comment.message }}</p>
                                 <small>{{ comment.username }} at {{ comment.submission_time }}. Edited {{ comment.edited_count }} times.</small>
-                            </div>
+                            </main>
                             {% if comment.username == user_logged_in.username %}
-                                E D
+                                <aside class="comment-buttons">
+                                    <a class="button cta-btn" onclick="delete_comment({{ question.id }}, {{ comment.id }})"><i class="fa fa-trash"></i></a>
+                                </aside>
                             {% endif %}
                         </article>
                     {% else %}
@@ -174,6 +178,13 @@
                         <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
                     </form>\
                 </section>");
+        }
+
+        function delete_comment(question_id, comment_id) {
+            if (confirm("Are you sure you want to delete this comment?")) {
+                $.post('/comment/' + comment_id + '/delete', function() {});
+                window.location.href = "/question/" + question_id;
+            }
         }
 
     </script>

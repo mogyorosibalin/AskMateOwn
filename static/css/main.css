@@ -313,11 +313,12 @@ p {
     color: #373737;
 }
 
-.question.single-question .question-buttons, .answer .answer-buttons {
+.question.single-question .question-buttons, .answer .answer-buttons, .comment .comment-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    width: 50px;
 }
 
 .answers {
@@ -332,7 +333,6 @@ p {
 
 .answer .answer-aside { width: 10%; }
 .answer .answer-main { width: 80%; }
-.answer .answer-buttons { width: 10%; }
 
 /* ----- COMMENT STYLE ----- */
 .comments {
@@ -345,7 +345,7 @@ p {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 5px;
+    padding: 10px 10px;
     box-sizing: border-box;
     border-bottom: 1px solid #777777;
     color: #777777;

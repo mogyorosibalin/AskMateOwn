@@ -181,5 +181,7 @@ def delete_comments_by_id(cursor, question_id, answer_id, comment_id):
     cursor.execute("""
         UPDATE comment
         SET deleted = TRUE
-        WHERE question_id = %(question_id)s OR answer_id = %(answer_id)s OR id = %(comment_id)s;
+        WHERE question_id = %(question_id)s OR answer_id = %(answer_id)s OR id = %(comment_id)s
+        RETURNING question_id;
     """, {'question_id': question_id, 'answer_id': answer_id, 'comment_id': comment_id})
+    cursor.fetchall()

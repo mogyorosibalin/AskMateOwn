@@ -255,6 +255,13 @@ def route_add_new_comment_for_answer(question_id=None, answer_id=None):
     return redirect('/list')
 
 
+@app.route('/comment/<comment_id>/delete', methods=['POST'])
+def route_delete_comment(comment_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    question_id = data_manager.delete_comments_by_id(None, None, comment_id)[0]
+    return question_id
+
+
 @app.errorhandler(404)
 def route_page_not_found(e):
     return render_template('404.html'), 404
