@@ -48,13 +48,14 @@
                         by
                         <span class="question-user">{{ question.username }}</span>
                     </small>
-                    <footer class="question-buttons">
-                        {% if question.user_id == user_logged_in.id %}
-                            <a class="button" href="/question/{{ question.id }}/edit">Edit</a>
-                            <a class="button" href="/question/{{ question.id }}/delete">Delete</a>
-                        {% endif %}
-                    </footer>
                 </main>
+                <aside class="question-buttons">
+                    <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
+                    {% if question.user_id == user_logged_in.id %}
+                        <a class="button cta-btn" href="/question/{{ question.id }}/edit"><i class="fa fa-edit"></i></a>
+                        <a class="button cta-btn" href="/question/{{ question.id }}/delete"><i class="fa fa-trash"></i></a>
+                    {% endif %}
+                </aside>
             </article>
         {% endif %}
     </section>
@@ -80,7 +81,7 @@
                     </form>
                 </section>
             {% else %}
-                <a href="/question/{{ question.id }}/new-answer" class="button">Add Answer</a>
+                <a href="/question/{{ question.id }}/new-answer" class="button add-button">Add Answer</a>
             {% endif %}
         {% endif %}
         {% for answer in answers %}

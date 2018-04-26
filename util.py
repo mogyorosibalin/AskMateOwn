@@ -46,9 +46,9 @@ def verify_password(plain_text_password, hashed_password):
 
 
 def get_login_error_messages(user):
-    database_user = data_manager.get_single_user_by_name(user["username"])[0]
+    database_user = data_manager.get_single_user_by_name(user["username"])
     if database_user:
-        if verify_password(user["password"], database_user["password"]):
+        if verify_password(user["password"], database_user[0]["password"]):
             return []
     return ['The Username and/or Password is incorrect!']
 

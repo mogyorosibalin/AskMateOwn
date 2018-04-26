@@ -87,6 +87,28 @@ p {
     color: #F4F4F4;
 }
 
+.button.cta-btn {
+    padding: 5px 8px;
+    background-color: #56A8E5;
+    color: white;
+    margin: 5px;
+    transition: background-color 0.15s ease-in-out;
+}
+.button.cta-btn:hover {
+    background-color: #5287FC;
+}
+
+.button.cta-btn i {
+    width: 20px;
+}
+
+.button.add-button {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 40px 0;
+    padding: 20px 0;
+}
+
 
 /* ----- PAGE HEADER STYLE ----- */
 .page-header {
@@ -224,6 +246,8 @@ p {
     font-weight: normal;
     color: #56A8E5;
     text-decoration: none;
+    padding: 0;
+    margin: 0;
 }
 
 /* Add media query to widen it on tablet. */
@@ -256,7 +280,9 @@ p {
 }
 
 .question.single-question {
-    padding: 40px 0;
+    padding: 40px 10px;
+    justify-content: space-between;
+    align-items: start;
 }
 
 .question.single-question .question-aside {
@@ -280,6 +306,13 @@ p {
 .question.single-question .question-aside .question-numbers li a {
     font-size: 28px;
     color: #373737;
+}
+
+.question.single-question .question-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 }
 
 /* ----- FORM STYLE ----- */

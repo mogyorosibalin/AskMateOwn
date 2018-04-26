@@ -2,7 +2,7 @@
 {% block title %}Questions{% endblock %}
 {% block content %}
     {% if user_logged_in %}
-        <a href="/new-question" class="button">Ask a Question</a>
+        <a href="/new-question" class="button add-button">Ask a Question</a>
     {% endif %}
     <section class="questions">
         {% for question in questions %}

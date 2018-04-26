@@ -5,7 +5,7 @@ import util
 @connection.connection_handler
 def get_all_user(cursor):
     cursor.execute("""
-        SELECT * FROM "user"
+        SELECT * FROM users
         ORDER BY username;
     """)
     return cursor.fetchall()
@@ -14,7 +14,7 @@ def get_all_user(cursor):
 @connection.connection_handler
 def get_single_user(cursor, user_id):
     cursor.execute("""
-        SELECT * FROM "user"
+        SELECT * FROM users
         WHERE id = %(id)s;
     """, {'id': user_id})
     return cursor.fetchall()
@@ -23,7 +23,7 @@ def get_single_user(cursor, user_id):
 @connection.connection_handler
 def get_single_user_by_name(cursor, username):
     cursor.execute("""
-        SELECT * FROM "user"
+        SELECT * FROM users
         WHERE username = %(username)s;
     """, {'username': username})
     return cursor.fetchall()
@@ -32,7 +32,7 @@ def get_single_user_by_name(cursor, username):
 @connection.connection_handler
 def add_new_user(cursor, user):
     cursor.execute("""
-        INSERT INTO "user"
+        INSERT INTO users
         (username, password, register_time, deleted)
         VALUES (%(username)s, %(password)s, date_trunc('second', now()), FALSE);
     """, {'username': user["username"], 'password': util.hash_password(user["password"])})
@@ -41,12 +41,12 @@ def add_new_user(cursor, user):
 @connection.connection_handler
 def get_all_questions(cursor):
     cursor.execute("""
-        SELECT question.id, question.title, question.submission_time, question.view_number, question.vote_number, "user".username,
+        SELECT question.id, question.title, question.submission_time, question.view_number, question.vote_number, users.username,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
-        FROM (question
-        INNER JOIN "user" ON question.user_id = "user".id)
+        FROM (  question
+        INNER JOIN users ON question.user_id = users.id)
         WHERE question.deleted is FALSE
-        GROUP BY question.id, "user".username
+        GROUP BY question.id, users.username
         ORDER BY question.submission_time DESC;
     """)
     return cursor.fetchall()
@@ -56,12 +56,12 @@ def get_all_questions(cursor):
 @connection.connection_handler
 def get_single_question_by_id(cursor, question_id):
     cursor.execute("""
-        SELECT question.id, question.title, question.message, question.submission_time, question.view_number, question.vote_number, "user".username, "user".id AS user_id,
+        SELECT question.id, question.title, question.message, question.submission_time, question.view_number, question.vote_number, users.username, users.id AS user_id,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
         FROM (question
-        INNER JOIN "user" ON question.user_id = "user".id)
+        INNER JOIN users ON question.user_id = users.id)
         WHERE question.id = %(question_id)s AND question.deleted is FALSE
-        GROUP BY question.id, "user".username, "user".id
+        GROUP BY question.id, users.username, users.id
         ORDER BY question.submission_time;
     """, {'question_id': question_id})
     return cursor.fetchall()
@@ -70,10 +70,10 @@ def get_single_question_by_id(cursor, question_id):
 @connection.connection_handler
 def get_all_answers_for_question(cursor, question_id):
     cursor.execute("""
-        SELECT answer.id, answer.message, answer.submission_time, "user".username, "user".id AS user_id
+        SELECT answer.id, answer.message, answer.submission_time, users.username, users.id AS user_id
         FROM ((answer
         INNER JOIN question ON answer.question_id = question.id)
-        INNER JOIN "user" ON answer.user_id = "user".id)
+        INNER JOIN users ON answer.user_id = users.id)
         WHERE answer.question_id = %(question_id)s AND answer.deleted = FALSE
         ORDER BY answer.submission_time DESC;
     """, {'question_id': question_id})
