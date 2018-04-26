@@ -90,6 +90,13 @@
     <section class="answers">
         {% for answer in answers %}
             <article class="answer">
+                <aside class="answer-aside">
+                    <ul class="answer-numbers">
+                        <li class="answer-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                        <li class="answer-votes"><span class="number">{{ answer.vote_number }}</span></li>
+                        <li class="answer-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                    </ul>
+                </aside>
                 <main class="answer-main">
                     <p class="answer-message">{{ answer.message }}</p>
                     <small class="answer-details">

@@ -43,7 +43,7 @@ def get_all_questions(cursor):
     cursor.execute("""
         SELECT question.id, question.title, question.submission_time, question.view_number, question.vote_number, users.username,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
-        FROM (  question
+        FROM (question
         INNER JOIN users ON question.user_id = users.id)
         WHERE question.deleted is FALSE
         GROUP BY question.id, users.username
@@ -70,7 +70,7 @@ def get_single_question_by_id(cursor, question_id):
 @connection.connection_handler
 def get_all_answers_for_question(cursor, question_id):
     cursor.execute("""
-        SELECT answer.id, answer.message, answer.submission_time, users.username, users.id AS user_id
+        SELECT answer.id, answer.message, answer.vote_number, answer.submission_time, users.username, users.id AS user_id
         FROM ((answer
         INNER JOIN question ON answer.question_id = question.id)
         INNER JOIN users ON answer.user_id = users.id)
