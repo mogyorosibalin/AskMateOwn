@@ -125,6 +125,7 @@ def route_delete_question(question_id=None):
         if question[0]["user_id"] == user_logged_in["id"]:
             data_manager.delete_question_by_id(question_id)
             data_manager.delete_answers_by_question_id(question_id)
+            data_manager.delete_comments_by_id(question_id, None, None)
             return redirect('/list')
         return redirect('/question/{}'.format(question_id))
     return redirect('/list')
@@ -228,6 +229,7 @@ def route_delete_answer(answer_id=None):
         question_id = answer[0]["question_id"]
         if answer[0]["user_id"] == user_logged_in["id"]:
             data_manager.delete_answer_by_id(answer_id)
+            data_manager.delete_comments_by_id(None, answer_id, None)
         return redirect('/question/{}'.format(question_id))
     return redirect('/list')
 

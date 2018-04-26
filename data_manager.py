@@ -170,7 +170,16 @@ def get_all_comments_by_id(cursor, question_id, answer_id):
         SELECT comment.id, comment.message, comment.submission_time, comment.edited_count, users.username
         FROM comment
         INNER JOIN users ON comment.user_id = users.id
-        WHERE question_id = %(question_id)s OR answer_id = %(answer_id)s
+        WHERE (question_id = %(question_id)s OR answer_id = %(answer_id)s) AND comment.deleted = FALSE
         ORDER BY comment.submission_time;
     """, {'question_id': question_id, 'answer_id': answer_id})
     return cursor.fetchall()
+
+
+@connection.connection_handler
+def delete_comments_by_id(cursor, question_id, answer_id, comment_id):
+    cursor.execute("""
+        UPDATE comment
+        SET deleted = TRUE
+        WHERE question_id = %(question_id)s OR answer_id = %(answer_id)s OR id = %(comment_id)s;
+    """, {'question_id': question_id, 'answer_id': answer_id, 'comment_id': comment_id})
