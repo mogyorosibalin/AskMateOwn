@@ -63,7 +63,7 @@
         {% if user_logged_in %}
             {% if new_answer %}
                 <section class="form new-question-form">
-                    <h3>Add Answer</h3>
+                    <h3>{{ 'Edit Answer' if answer.user_id else 'Add Answer'}}</h3>
                     {% if error_messages %}
                         <article class="error-messages">
                             {% for message in error_messages %}
@@ -71,12 +71,12 @@
                             {% endfor %}
                         </article>
                     {% endif %}
-                    <form action="/question/{{ question.id }}/new-answer" method="POST">
+                    <form action="{{ '/question/' + question.id|string + '/edit-answer/' + answer.id|string if answer.user_id else '/question/' + question.id|string + '/new-answer'}}" method="POST">
                         <div class="form-group">
                             <label for="message">Message</label>
                             <textarea id="message" row="4" name="message" placeholder="Message ...">{{ answer.message }}</textarea>
                         </div>
-                        <button type="submit" class="button">Answer</button>
+                        <button type="submit" class="button">{{ 'Edit' if answer.user_id else 'Answer'}}</button>
                         <a href="/question/{{ question.id }}" class="button button-outline">Cancel</a>
                     </form>
                 </section>
@@ -96,6 +96,7 @@
                     </small>
                     <footer class="answer-buttons">
                         {% if answer.user_id == user_logged_in.id %}
+                            <a class="button" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}">Edit</a>
                             <a class="button" href="/answer/{{ answer.id }}/delete">Delete</a>
                         {% endif %}
                     </footer>

@@ -144,3 +144,12 @@ def delete_answer_by_id(cursor, answer_id):
         SET deleted = TRUE 
         WHERE id = %(id)s;
     """, {'id': answer_id})
+
+
+@connection.connection_handler
+def update_answer_by_id(cursor, answer_id, answer):
+    cursor.execute("""
+        UPDATE answer
+        SET message = %(message)s
+        WHERE id = %(id)s;
+    """, {'message': answer["message"], 'id': answer_id})

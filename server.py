@@ -178,6 +178,36 @@ def route_new_answer(question_id=None):
             return redirect('/question/{}/new-answer'.format(question_id))
 
 
+@app.route('/question/<question_id>/edit-answer/<answer_id>', methods=['GET', 'POST'])
+def route_edit_answer(question_id=None, answer_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    if request.method == 'GET':
+        question = data_manager.get_single_question_by_id(question_id)
+        if len(question) == 1:
+            answer = data_manager.get_single_answer_by_id(answer_id)
+            if len(answer) == 1:
+                answer = util.get_data_from_session("answer")
+                if not answer:
+                    answer = data_manager.get_single_answer_by_id(answer_id)[0]
+                error_messages = util.get_data_from_session("error_messages")
+                answers = data_manager.get_all_answers_for_question(question_id)
+                return render_template('question.html', question=question[0], answers=answers, answer=answer,
+                                       error_messages=error_messages,
+                                       new_answer=True, user_logged_in=user_logged_in)
+            return redirect('/question/{}'.format(question_id))
+        return redirect('/list')
+    elif request.method == 'POST':
+        answer = util.get_dict_from_request(request.form)
+        error_messages = util.get_new_answer_error_messages(answer)
+        if len(error_messages) == 0:
+            data_manager.update_answer_by_id(answer_id, answer)
+            return redirect('/question/{}'.format(question_id))
+        else:
+            session["answer"] = answer
+            session["error_messages"] = error_messages
+            return redirect('/question/{}/edit-answer/{}'.format(question_id, answer_id))
+
+
 @app.route('/answer/<answer_id>/delete')
 def route_delete_answer(answer_id=None):
     user_logged_in = util.get_data_from_session("user", False)
