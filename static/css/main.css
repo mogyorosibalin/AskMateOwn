@@ -100,6 +100,15 @@ p {
     z-index: 100;
 }
 
+.page-header .wrapper {
+    width: 90%;
+    max-width: 1024px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .page-header .overlay {
     position: fixed;
     display: none;
@@ -126,8 +135,6 @@ p {
 }
 
 .page-header .page-menu, .page-header .user-menu {
-    position: absolute;
-    top: 0;
     height: 80px;
     line-height: 80px;
 }
