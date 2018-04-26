@@ -49,20 +49,22 @@
                         <span class="question-user">{{ question.username }}</span>
                     </small>
                 </main>
-                <aside class="question-buttons">
-                    <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
-                    {% if question.user_id == user_logged_in.id %}
-                        <a class="button cta-btn" href="/question/{{ question.id }}/edit"><i class="fa fa-edit"></i></a>
-                        <a class="button cta-btn" href="/question/{{ question.id }}/delete"><i class="fa fa-trash"></i></a>
-                    {% endif %}
-                </aside>
+                {% if user_logged_in %}
+                    <aside class="question-buttons">
+                        <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
+                        {% if question.user_id == user_logged_in.id %}
+                            <a class="button cta-btn" href="/question/{{ question.id }}/edit"><i class="fa fa-edit"></i></a>
+                            <a class="button cta-btn" href="/question/{{ question.id }}/delete"><i class="fa fa-trash"></i></a>
+                        {% endif %}
+                    </aside>
+                {% endif %}
             </article>
         {% endif %}
     </section>
-    <section class="answers">
+    <section class="new-answer">
         {% if user_logged_in %}
             {% if new_answer %}
-                <section class="form new-question-form">
+                <section class="form new-answer-form">
                     <h3>{{ 'Edit Answer' if answer.user_id else 'Add Answer'}}</h3>
                     {% if error_messages %}
                         <article class="error-messages">
@@ -84,6 +86,8 @@
                 <a href="/question/{{ question.id }}/new-answer" class="button add-button">Add Answer</a>
             {% endif %}
         {% endif %}
+    </section>
+    <section class="answers">
         {% for answer in answers %}
             <article class="answer">
                 <main class="answer-main">
@@ -94,13 +98,16 @@
                         by
                         <span class="answer-user">{{ answer.username }}</span>
                     </small>
-                    <footer class="answer-buttons">
-                        {% if answer.user_id == user_logged_in.id %}
-                            <a class="button" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}">Edit</a>
-                            <a class="button" href="/answer/{{ answer.id }}/delete">Delete</a>
-                        {% endif %}
-                    </footer>
                 </main>
+                {% if user_logged_in %}
+                    <aside class="answer-buttons">
+                        <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
+                        {% if answer.user_id == user_logged_in.id %}
+                            <a class="button cta-btn" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}"><i class="fa fa-edit"></i></a>
+                            <a class="button cta-btn" href="/answer/{{ answer.id }}/delete"><i class="fa fa-trash"></i></a>
+                        {% endif %}
+                    </aside>
+                {% endif %}
             </article>
         {% else %}
             <p>No answers for this question!</p>

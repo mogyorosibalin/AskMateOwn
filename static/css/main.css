@@ -208,12 +208,17 @@ p {
     font-size: 40px;
 }
 
-/* ----- QUESTION STYLE ----- */
+/* ----- QUESTION & ANSWER STYLE ----- */
 .questions {
     width: 100%;
 }
 
-.question {
+.answers {
+    width: 100%;
+    margin: 30px 0;
+}
+
+.question, .answer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -224,6 +229,16 @@ p {
 }
 
 .question:nth-child(1) {
+    border-top: 1px solid #373737;
+}
+
+.answer {
+    width: 90%;
+    margin: 0 0 0 auto;
+    padding: 15px 10px;
+}
+
+.answer:nth-child(1) {
     border-top: 1px solid #373737;
 }
 
