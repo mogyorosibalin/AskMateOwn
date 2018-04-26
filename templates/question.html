@@ -26,7 +26,14 @@
                 </form>
             </section>
         {% else %}
-            <article class="question">
+            <article class="question single-question">
+                <aside class="question-aside">
+                    <ul class="question-numbers">
+                        <li class="question-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                        <li class="question-votes"><span class="number">{{ question.vote_number }}</span></li>
+                        <li class="question-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                    </ul>
+                </aside>
                 <main class="question-main">
                     <h4 class="question-title">{{ question.title }}</h4>
                     <ul class="question-tags">
@@ -48,13 +55,6 @@
                         {% endif %}
                     </footer>
                 </main>
-                <aside class="question-aside">
-                    <ul class="question-numbers">
-                        <li class="question-views">Views: {{ question.view_number }}</li>
-                        <li class="question-votes">Votes: {{ question.vote_number }}</li>
-                        <li class="question-answers">Answers: {{ question.answer_number }}</li>
-                    </ul>
-                </aside>
             </article>
         {% endif %}
     </section>

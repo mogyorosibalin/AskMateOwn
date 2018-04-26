@@ -21,7 +21,7 @@ body {
     /* color: #212529; */
     color: #373737;
     text-align: left;
-    background-color: #F4F4F4;
+    background-color: #FEFEFE;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -184,6 +184,102 @@ p {
 
 .page-header .page-menu-handler i, .page-header .user-menu-handler i {
     font-size: 40px;
+}
+
+/* ----- QUESTION STYLE ----- */
+.questions {
+    width: 100%;
+}
+
+.question {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding: 30px 15px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #373737;
+}
+
+.question:nth-child(1) {
+    border-top: 1px solid #373737;
+}
+
+.question small {
+    font-size: 14px;
+    color: #999999;
+}
+
+.question .question-main {
+    width: 78%;
+}
+
+.question .question-main .question-title {
+    padding: 0;
+    margin: 0;
+}
+
+.question .question-main .question-title a {
+    font-size: 20px;
+    font-weight: normal;
+    color: #56A8E5;
+    text-decoration: none;
+}
+
+/* Add media query to widen it on tablet. */
+.question .question-aside {
+    width: 22%;
+}
+
+.question .question-aside .question-numbers {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.question .question-aside .question-numbers li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.question .question-aside .question-numbers li span.number {
+    font-size: 16px;
+}
+.question .question-aside .question-numbers li span.label {
+    font-size: 12px;
+}
+
+.question.single-question {
+    padding: 40px 0;
+}
+
+.question.single-question .question-aside {
+    width: 10%;
+}
+
+.question.single-question .question-aside .question-numbers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.question.single-question .question-aside .question-numbers li span {
+    font-size: 24px;
+}
+
+.question.single-question .question-aside .question-numbers li a {
+    font-size: 28px;
+    color: #373737;
 }
 
 /* ----- FORM STYLE ----- */

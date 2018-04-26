@@ -23,9 +23,9 @@
                 </main>
                 <aside class="question-aside">
                     <ul class="question-numbers">
-                        <li class="question-views">Views: {{ question.view_number }}</li>
-                        <li class="question-votes">Votes: {{ question.vote_number }}</li>
-                        <li class="question-answers">Answers: {{ question.answer_number }}</li>
+                        <li class="question-views"><span class="number">{{ question.view_number }}</span><span class="label">Views</span></li>
+                        <li class="question-votes"><span class="number">{{ question.vote_number }}</span><span class="label">Votes</span></li>
+                        <li class="question-answers"><span class="number">{{ question.answer_number }}</span><span class="label">Answers</span></li>
                     </ul>
                 </aside>
             </article>
