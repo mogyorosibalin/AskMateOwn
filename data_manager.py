@@ -57,7 +57,7 @@ def get_all_questions(cursor):
 def get_single_question_by_id(cursor, question_id):
     cursor.execute("""
         SELECT question.id, question.title, question.message, question.submission_time, question.view_number, question.vote_number, users.username, users.id AS user_id,
-        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
+        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = %(question_id)s) AS answer_number
         FROM (question
         INNER JOIN users ON question.user_id = users.id)
         WHERE question.id = %(question_id)s AND question.deleted is FALSE
@@ -153,3 +153,24 @@ def update_answer_by_id(cursor, answer_id, answer):
         SET message = %(message)s
         WHERE id = %(id)s;
     """, {'message': answer["message"], 'id': answer_id})
+
+
+@connection.connection_handler
+def add_new_comment(cursor, question_id, answer_id, user_id, comment):
+    cursor.execute("""
+        INSERT INTO comment
+        (question_id, answer_id, user_id, message, submission_time, edited_count)
+        VALUES (%(question_id)s, %(answer_id)s, %(user_id)s, %(message)s, date_trunc('second', now()), 0); 
+    """, {'question_id': question_id, 'answer_id': answer_id, 'user_id': user_id, 'message': comment["message"]})
+
+
+@connection.connection_handler
+def get_all_comments_by_id(cursor, question_id, answer_id):
+    cursor.execute("""
+        SELECT comment.id, comment.message, comment.submission_time, comment.edited_count, users.username
+        FROM comment
+        INNER JOIN users ON comment.user_id = users.id
+        WHERE question_id = %(question_id)s OR answer_id = %(answer_id)s
+        ORDER BY comment.submission_time;
+    """, {'question_id': question_id, 'answer_id': answer_id})
+    return cursor.fetchall()

@@ -228,7 +228,7 @@ p {
     border-bottom: 1px solid #373737;
 }
 
-.question:nth-child(1), .answer:nth-child(1) {
+.question:nth-child(1), .answer-wrapper:nth-child(1) .answer {
     border-top: 1px solid #373737;
 }
 
@@ -320,15 +320,42 @@ p {
     justify-content: space-between;
 }
 
-.answer {
+.answers {
     width: 90%;
     margin: 0 0 0 auto;
+}
+
+.answer {
+    width: 100%;
     padding: 15px 10px;
 }
 
 .answer .answer-aside { width: 10%; }
 .answer .answer-main { width: 80%; }
 .answer .answer-buttons { width: 10%; }
+
+/* ----- COMMENT STYLE ----- */
+.comments {
+    width: 95%;
+    margin: 0 0 0 auto;
+}
+
+.comment {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #777777;
+    color: #777777;
+    font-size: 14px;
+}
+
+.comment .comment-details p, .comment .comment-details small{
+    padding: 0;
+    margin: 0;
+}
 
 /* ----- FORM STYLE ----- */
 .form {

@@ -26,43 +26,59 @@
                 </form>
             </section>
         {% else %}
-            <article class="question single-question">
-                <aside class="question-aside">
-                    <ul class="question-numbers">
-                        <li class="question-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
-                        <li class="question-votes"><span class="number">{{ question.vote_number }}</span></li>
-                        <li class="question-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
-                    </ul>
-                </aside>
-                <main class="question-main">
-                    <h4 class="question-title">{{ question.title }}</h4>
-                    <ul class="question-tags">
-                        {% for tag in question.tags %}
-                            <li class="question-tag">Tag</li>
-                        {% endfor %}
-                    </ul>
-                    <p class="question-message">{{ question.message }}</p>
-                    <small class="question-details">
-                        Submitted on
-                        <span class="question-submission-time">{{ question.submission_time }}</span>
-                        by
-                        <span class="question-user">{{ question.username }}</span>
-                    </small>
-                </main>
-                {% if user_logged_in %}
-                    <aside class="question-buttons">
-                        <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
-                        {% if question.user_id == user_logged_in.id %}
-                            <a class="button cta-btn" href="/question/{{ question.id }}/edit"><i class="fa fa-edit"></i></a>
-                            <a class="button cta-btn" href="/question/{{ question.id }}/delete"><i class="fa fa-trash"></i></a>
-                        {% endif %}
+            <section class="question-wrapper">
+                <article class="question single-question">
+                    <aside class="question-aside">
+                        <ul class="question-numbers">
+                            <li class="question-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                            <li class="question-votes"><span class="number">{{ question.vote_number }}</span></li>
+                            <li class="question-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                        </ul>
                     </aside>
-                {% endif %}
-            </article>
+                    <main class="question-main">
+                        <h4 class="question-title">{{ question.title }}</h4>
+                        <ul class="question-tags">
+                            {% for tag in question.tags %}
+                                <li class="question-tag">Tag</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="question-message">{{ question.message }}</p>
+                        <small class="question-details">
+                            Submitted on
+                            <span class="question-submission-time">{{ question.submission_time }}</span>
+                            by
+                            <span class="question-user">{{ question.username }}</span>
+                        </small>
+                    </main>
+                    {% if user_logged_in %}
+                        <aside class="question-buttons">
+                            <a class="button cta-btn" onclick="add_comment_for_question({{ question.id }})"><i class="fa fa-comment"></i></a>
+                            {% if question.user_id == user_logged_in.id %}
+                                <a class="button cta-btn" href="/question/{{ question.id }}/edit"><i class="fa fa-edit"></i></a>
+                                <a class="button cta-btn" href="/question/{{ question.id }}/delete"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                        </aside>
+                    {% endif %}
+                </article>
+                <article class="comments">
+                    {% for comment in question.comments %}
+                        <article class="comment">
+                            <div class="comment-details">
+                                <p class="comment-message">{{ comment.message }}</p>
+                                <small>{{ comment.username }} at {{ comment.submission_time }}. Edited {{ comment.edited_count }} times.</small>
+                            </div>
+                            {% if comment.username == user_logged_in.username %}
+                                E D
+                            {% endif %}
+                        </article>
+                    {% else %}
+                    {% endfor %}
+                </article>
+            </section>
         {% endif %}
     </section>
-    <section class="new-answer">
-        {% if user_logged_in %}
+    {% if user_logged_in %}
+        <section class="new-answer">
             {% if new_answer %}
                 <section class="form new-answer-form">
                     <h3>{{ 'Edit Answer' if answer.user_id else 'Add Answer'}}</h3>
@@ -85,39 +101,80 @@
             {% else %}
                 <a href="/question/{{ question.id }}/new-answer" class="button add-button">Add Answer</a>
             {% endif %}
-        {% endif %}
-    </section>
+        </section>
+    {% endif %}
     <section class="answers">
         {% for answer in answers %}
-            <article class="answer">
-                <aside class="answer-aside">
-                    <ul class="answer-numbers">
-                        <li class="answer-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
-                        <li class="answer-votes"><span class="number">{{ answer.vote_number }}</span></li>
-                        <li class="answer-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
-                    </ul>
-                </aside>
-                <main class="answer-main">
-                    <p class="answer-message">{{ answer.message }}</p>
-                    <small class="answer-details">
-                        Submitted on
-                        <span class="answer-submission-time">{{ answer.submission_time }}</span>
-                        by
-                        <span class="answer-user">{{ answer.username }}</span>
-                    </small>
-                </main>
-                {% if user_logged_in %}
-                    <aside class="answer-buttons">
-                        <a class="button cta-btn" href="#"><i class="fa fa-comment"></i></a>
-                        {% if answer.user_id == user_logged_in.id %}
-                            <a class="button cta-btn" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}"><i class="fa fa-edit"></i></a>
-                            <a class="button cta-btn" href="/answer/{{ answer.id }}/delete"><i class="fa fa-trash"></i></a>
-                        {% endif %}
+            <section class="answer-wrapper answer-{{ answer.id }}">
+                <article class="answer">
+                    <aside class="answer-aside">
+                        <ul class="answer-numbers">
+                            <li class="answer-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                            <li class="answer-votes"><span class="number">{{ answer.vote_number }}</span></li>
+                            <li class="answer-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                        </ul>
                     </aside>
-                {% endif %}
-            </article>
+                    <main class="answer-main">
+                        <p class="answer-message">{{ answer.message }}</p>
+                        <small class="answer-details">
+                            Submitted on
+                            <span class="answer-submission-time">{{ answer.submission_time }}</span>
+                            by
+                            <span class="answer-user">{{ answer.username }}</span>
+                        </small>
+                    </main>
+                    {% if user_logged_in %}
+                        <aside class="answer-buttons">
+                            <a class="button cta-btn" onclick="add_comment_for_answer({{ question.id }}, {{ answer.id }})"><i class="fa fa-comment"></i></a>
+                            {% if answer.user_id == user_logged_in.id %}
+                                <a class="button cta-btn" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}"><i class="fa fa-edit"></i></a>
+                                <a class="button cta-btn" href="/answer/{{ answer.id }}/delete"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                        </aside>
+                    {% endif %}
+                </article>
+                <article class="comments">
+                    {% for comment in answer.comments %}
+                        <article class="comment">
+                            <div class="comment-details">
+                                <p class="comment-message">{{ comment.message }}</p>
+                                <small>{{ comment.username }} at {{ comment.submission_time }}. Edited {{ comment.edited_count }} times.</small>
+                            </div>
+                            {% if comment.username == user_logged_in.username %}
+                                E D
+                            {% endif %}
+                        </article>
+                    {% else %}
+                    {% endfor %}
+                </article>
+            </section>
         {% else %}
             <p>No answers for this question!</p>
         {% endfor %}
     </section>
+    <script type="text/javascript">
+
+        function add_comment_for_question(question_id) {
+            $('.question-wrapper .comments').append("\
+                <section class='form'>\
+                    <form action='/question/" + question_id + "/new-comment' method='POST'>\
+                        <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
+                        <button type='submit' class='button'>Comment</button>\
+                        <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
+                    </form>\
+                </section>");
+        }
+
+        function add_comment_for_answer(question_id, answer_id) {
+            $('.answer-wrapper.answer-' + answer_id + ' .comments').append("\
+                <section class='form'>\
+                    <form action='/question/" + question_id + "/" + answer_id + "/new-comment' method='POST'>\
+                        <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
+                        <button type='submit' class='button'>Comment</button>\
+                        <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
+                    </form>\
+                </section>");
+        }
+
+    </script>
 {% endblock %}
