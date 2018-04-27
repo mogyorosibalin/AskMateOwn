@@ -106,13 +106,18 @@ def route_new_question():
 
 @app.route('/question/<question_id>')
 def route_display_question(question_id=None):
-    question = data_manager.get_single_question_by_id(question_id)
+    user_logged_in = util.get_data_from_session("user", False)
+    if not user_logged_in:
+        user_logged_in = {"id": 0}
+    question = util.get_full_single_question(user_logged_in["id"], question_id)
     if question:
-        question[0]["comments"] = data_manager.get_all_comments_by_id(question_id, None)
         answers = data_manager.get_all_answers_for_question(question_id)
         for i in range(len(answers)):
+            vote = data_manager.get_vote_value(user_logged_in["id"], None, answers[i]["id"])
+            if vote:
+                answers[i]["vote_value"] = vote["value"]
             answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
-        return render_template('question.html', question=question[0], answers=answers,
+        return render_template('question.html', question=question, answers=answers,
                                user_logged_in=util.get_data_from_session("user", False))
     return redirect('/list')
 
@@ -121,8 +126,8 @@ def route_display_question(question_id=None):
 def route_delete_question(question_id=None):
     user_logged_in = util.get_data_from_session("user", False)
     question = data_manager.get_single_question_by_id(question_id)
-    if len(question) == 1:
-        if question[0]["user_id"] == user_logged_in["id"]:
+    if question:
+        if question["user_id"] == user_logged_in["id"]:
             data_manager.delete_question_by_id(question_id)
             data_manager.delete_answers_by_question_id(question_id)
             data_manager.delete_comments_by_id(question_id, None, None)
@@ -136,14 +141,14 @@ def route_edit_question(question_id=None):
     user_logged_in = util.get_data_from_session("user", False)
     if request.method == 'GET':
         question = data_manager.get_single_question_by_id(question_id)
-        if len(question) == 1:
-            if question[0]["user_id"] == user_logged_in["id"]:
+        if question:
+            if question["user_id"] == user_logged_in["id"]:
                 error_messages = util.get_data_from_session("error_messages")
-                question[0]["comments"] = data_manager.get_all_comments_by_id(question_id, None)
+                question["comments"] = data_manager.get_all_comments_by_id(question_id, None)
                 answers = data_manager.get_all_answers_for_question(question_id)
                 for i in range(len(answers)):
                     answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
-                return render_template('question.html', question=question[0], answers=answers,
+                return render_template('question.html', question=question, answers=answers,
                                        error_messages=error_messages,
                                        editing_question=True, user_logged_in=user_logged_in)
             return redirect('/question/{}'.format(question_id))
@@ -164,15 +169,14 @@ def route_edit_question(question_id=None):
 def route_new_answer(question_id=None):
     user_logged_in = util.get_data_from_session("user", False)
     if request.method == 'GET':
-        question = data_manager.get_single_question_by_id(question_id)
+        question = util.get_full_single_question(user_logged_in["id"], question_id)
         answer = util.get_data_from_session("answer")
-        if len(question) == 1:
+        if question:
             error_messages = util.get_data_from_session("error_messages")
-            question[0]["comments"] = data_manager.get_all_comments_by_id(question_id, None)
             answers = data_manager.get_all_answers_for_question(question_id)
             for i in range(len(answers)):
                 answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
-            return render_template('question.html', question=question[0], answers=answers, answer=answer,
+            return render_template('question.html', question=question, answers=answers, answer=answer,
                                    error_messages=error_messages,
                                    new_answer=True, user_logged_in=user_logged_in)
         return redirect('/list')
@@ -192,19 +196,18 @@ def route_new_answer(question_id=None):
 def route_edit_answer(question_id=None, answer_id=None):
     user_logged_in = util.get_data_from_session("user", False)
     if request.method == 'GET':
-        question = data_manager.get_single_question_by_id(question_id)
-        if len(question) == 1:
+        question = util.get_full_single_question(user_logged_in["id"], question_id)
+        if question:
             answer = data_manager.get_single_answer_by_id(answer_id)
             if len(answer) == 1:
                 answer = util.get_data_from_session("answer")
                 if not answer:
                     answer = data_manager.get_single_answer_by_id(answer_id)[0]
                 error_messages = util.get_data_from_session("error_messages")
-                question[0]["comments"] = data_manager.get_all_comments_by_id(question_id, None)
                 answers = data_manager.get_all_answers_for_question(question_id)
                 for i in range(len(answers)):
                     answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
-                return render_template('question.html', question=question[0], answers=answers, answer=answer,
+                return render_template('question.html', question=question, answers=answers, answer=answer,
                                        error_messages=error_messages,
                                        new_answer=True, user_logged_in=user_logged_in)
             return redirect('/question/{}'.format(question_id))
@@ -258,8 +261,11 @@ def route_add_new_comment_for_answer(question_id=None, answer_id=None):
 @app.route('/comment/<comment_id>/delete', methods=['POST'])
 def route_delete_comment(comment_id=None):
     user_logged_in = util.get_data_from_session("user", False)
-    question_id = data_manager.delete_comments_by_id(None, None, comment_id)[0]
-    return question_id
+    if not user_logged_in:
+        user_logged_in = {"id": 0}
+    comment = data_manager.get_single_comment_by_id(user_logged_in["id"], comment_id)
+    if comment:
+        data_manager.delete_comments_by_id(None, None, comment_id)
 
 
 @app.route('/<content_type>/<content_id>/<vote>')
@@ -268,25 +274,26 @@ def route_vote(content_type=None, content_id=None, vote=None):
     if content_type in ["question", 'answer']:
         if vote in ["up", "down"]:
             value = 1 if vote == "up" else -1
-            if content_type == "question" and data_manager.get_single_question_by_id(content_id):
-                vote = data_manager.get_single_vote(user_logged_in["id"], content_id, None)
-                if vote:
-                    data_manager.update_vote_by_id(vote[0]["id"], value)
-                else:
-                    data_manager.add_new_vote(user_logged_in["id"], content_id, None, value)
-            if content_type == "answer" and data_manager.get_single_answer_by_id(content_id):
-                vote = data_manager.get_single_vote(user_logged_in["id"], None, content_id)
-                if vote:
-                    data_manager.update_vote_by_id(vote[0]["id"], value)
-                else:
-                    data_manager.add_new_vote(user_logged_in["id"], None, content_id, value)
-                content_id = data_manager.get_single_answer_by_id(content_id)[0]["question_id"]
-            return redirect('/question/{}'.format(content_id))
-    return redirect(url_for('route_page_not_found'))
+            if user_logged_in:
+                if content_type == "question" and data_manager.get_single_question_by_id(content_id):
+                    vote = data_manager.get_single_vote(user_logged_in["id"], content_id, None)
+                    if vote:
+                        data_manager.update_vote_by_id(vote[0]["id"], value)
+                    else:
+                        data_manager.add_new_vote(user_logged_in["id"], content_id, None, value)
+                if content_type == "answer" and data_manager.get_single_answer_by_id(content_id):
+                    vote = data_manager.get_single_vote(user_logged_in["id"], None, content_id)
+                    if vote:
+                        data_manager.update_vote_by_id(vote[0]["id"], value)
+                    else:
+                        data_manager.add_new_vote(user_logged_in["id"], None, content_id, value)
+                    content_id = data_manager.get_single_answer_by_id(content_id)[0]["question_id"]
+                return redirect('/question/{}'.format(content_id))
+    return redirect('/home')
 
 
 @app.errorhandler(404)
-def route_page_not_found(e):
+def route_page_not_found(e=None):
     return render_template('404.html'), 404
 
 

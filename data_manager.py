@@ -57,17 +57,16 @@ def get_all_questions(cursor):
 @connection.connection_handler
 def get_single_question_by_id(cursor, question_id):
     cursor.execute("""
-        SELECT question.id, question.title, question.message, question.submission_time, question.vote_number, users.username, users.id AS user_id,
+        SELECT question.id, question.title, question.message, question.submission_time, users.username, users.id AS user_id,
         (SELECT COALESCE(SUM(value), 0) FROM vote WHERE question_id = question.id) AS vote_number,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = %(question_id)s) AS answer_number
-        FROM ((question
+        FROM (question
         INNER JOIN users ON question.user_id = users.id)
-        INNER JOIN vote ON question.id = vote.question_id)
         WHERE question.id = %(question_id)s AND question.deleted is FALSE
-        GROUP BY question.id, users.username, users.id, vote.value
+        GROUP BY question.id, users.username, users.id
         ORDER BY question.submission_time;
     """, {'question_id': question_id})
-    return cursor.fetchall()
+    return cursor.fetchone()
 
 
 @connection.connection_handler
@@ -82,15 +81,6 @@ def get_all_answers_for_question(cursor, question_id):
         ORDER BY answer.submission_time DESC;
     """, {'question_id': question_id})
     return cursor.fetchall()
-
-
-@connection.connection_handler
-def get_vote_value_for_answer(cursor, user_id, answer_id):
-    cursor.execute("""
-        SELECT value FROM vote
-        WHERE user_id = %(user_id)s AND answer_id = %(answer_id)s;
-    """, {'user_id': user_id, 'answer_id': answer_id})
-    return cursor.fetchone()
 
 
 @connection.connection_handler
@@ -190,6 +180,15 @@ def get_all_comments_by_id(cursor, question_id, answer_id):
 
 
 @connection.connection_handler
+def get_single_comment_by_id(cursor, user_id, comment_id):
+    cursor.execute("""
+        SELECT * FROM comment
+        WHERE id = %(comment_id)s AND user_id = %(user_id)s;
+    """, {'comment_id': comment_id, 'user_id': user_id})
+    return cursor.fetchone()
+
+
+@connection.connection_handler
 def delete_comments_by_id(cursor, question_id, answer_id, comment_id):
     cursor.execute("""
         UPDATE comment
@@ -225,3 +224,12 @@ def update_vote_by_id(cursor, id, value):
         SET value = %(value)s
         WHERE id = %(id)s;
     """, {'value': value, 'id': id})
+
+
+@connection.connection_handler
+def get_vote_value(cursor, user_id, question_id, answer_id):
+    cursor.execute("""
+        SELECT value FROM vote
+        WHERE user_id = %(user_id)s AND (question_id = %(question_id)s OR answer_id = %(answer_id)s);
+    """, {'user_id': user_id, 'question_id': question_id, 'answer_id': answer_id})
+    return cursor.fetchone()

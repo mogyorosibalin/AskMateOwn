@@ -66,3 +66,13 @@ def get_new_answer_error_messages(answer):
     if len(answer["message"]) < 10:
         return ['The answer must contain at least 10 characters!']
     return []
+
+
+def get_full_single_question(user_id, question_id):
+    question = data_manager.get_single_question_by_id(question_id)
+    if question:
+        question["comments"] = data_manager.get_all_comments_by_id(question_id, None)
+        vote = data_manager.get_vote_value(user_id, question["id"], None)
+        if vote:
+            question["vote_value"] = vote["value"]
+    return question
