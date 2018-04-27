@@ -159,25 +159,29 @@
     <script type="text/javascript">
 
         function add_comment_for_question(question_id) {
-            $('.question-wrapper .comments').append("\
-                <section class='form'>\
-                    <form action='/question/" + question_id + "/new-comment' method='POST'>\
-                        <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
-                        <button type='submit' class='button'>Comment</button>\
-                        <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
-                    </form>\
-                </section>");
+            if (!$('.comment-form').length) {
+                $('.question-wrapper .comments').append("\
+                    <section class='form comment-form'>\
+                        <form action='/question/" + question_id + "/new-comment' method='POST'>\
+                            <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
+                            <button type='submit' class='button'>Comment</button>\
+                            <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
+                        </form>\
+                    </section>");
+            }
         }
 
         function add_comment_for_answer(question_id, answer_id) {
-            $('.answer-wrapper.answer-' + answer_id + ' .comments').append("\
-                <section class='form'>\
-                    <form action='/question/" + question_id + "/" + answer_id + "/new-comment' method='POST'>\
-                        <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
-                        <button type='submit' class='button'>Comment</button>\
-                        <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
-                    </form>\
-                </section>");
+            if (!$('.comment-form').length) {
+                $('.answer-wrapper.answer-' + answer_id + ' .comments').append("\
+                    <section class='form comment-form'>\
+                        <form action='/question/" + question_id + "/" + answer_id + "/new-comment' method='POST'>\
+                            <div class='form-group'><textarea placeholder='Comment' required name='message'></textarea></div>\
+                            <button type='submit' class='button'>Comment</button>\
+                            <a class='button button-outline' href='/question/" + question_id + "'>Cancel</a>\
+                        </form>\
+                    </section>");
+            }
         }
 
         function delete_comment(question_id, comment_id) {
