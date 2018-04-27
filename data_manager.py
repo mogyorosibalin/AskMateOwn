@@ -41,7 +41,8 @@ def add_new_user(cursor, user):
 @connection.connection_handler
 def get_all_questions(cursor):
     cursor.execute("""
-        SELECT question.id, question.title, question.submission_time, question.view_number, question.vote_number, users.username,
+        SELECT question.id, question.title, question.submission_time, question.view_number, users.username,
+        (SELECT COALESCE(SUM(value), 0) FROM vote WHERE question_id = question.id) AS vote_number,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
         FROM (question
         INNER JOIN users ON question.user_id = users.id)
@@ -56,12 +57,14 @@ def get_all_questions(cursor):
 @connection.connection_handler
 def get_single_question_by_id(cursor, question_id):
     cursor.execute("""
-        SELECT question.id, question.title, question.message, question.submission_time, question.view_number, question.vote_number, users.username, users.id AS user_id,
+        SELECT question.id, question.title, question.message, question.submission_time, question.vote_number, users.username, users.id AS user_id,
+        (SELECT COALESCE(SUM(value), 0) FROM vote WHERE question_id = question.id) AS vote_number,
         (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = %(question_id)s) AS answer_number
-        FROM (question
+        FROM ((question
         INNER JOIN users ON question.user_id = users.id)
+        INNER JOIN vote ON question.id = vote.question_id)
         WHERE question.id = %(question_id)s AND question.deleted is FALSE
-        GROUP BY question.id, users.username, users.id
+        GROUP BY question.id, users.username, users.id, vote.value
         ORDER BY question.submission_time;
     """, {'question_id': question_id})
     return cursor.fetchall()
@@ -70,7 +73,8 @@ def get_single_question_by_id(cursor, question_id):
 @connection.connection_handler
 def get_all_answers_for_question(cursor, question_id):
     cursor.execute("""
-        SELECT answer.id, answer.message, answer.vote_number, answer.submission_time, users.username, users.id AS user_id
+        SELECT answer.id, answer.message, answer.submission_time, users.username, users.id AS user_id,
+        (SELECT COALESCE(SUM(value), 0) FROM vote WHERE answer_id = answer.id) AS vote_number
         FROM ((answer
         INNER JOIN question ON answer.question_id = question.id)
         INNER JOIN users ON answer.user_id = users.id)
@@ -78,6 +82,15 @@ def get_all_answers_for_question(cursor, question_id):
         ORDER BY answer.submission_time DESC;
     """, {'question_id': question_id})
     return cursor.fetchall()
+
+
+@connection.connection_handler
+def get_vote_value_for_answer(cursor, user_id, answer_id):
+    cursor.execute("""
+        SELECT value FROM vote
+        WHERE user_id = %(user_id)s AND answer_id = %(answer_id)s;
+    """, {'user_id': user_id, 'answer_id': answer_id})
+    return cursor.fetchone()
 
 
 @connection.connection_handler
@@ -185,3 +198,30 @@ def delete_comments_by_id(cursor, question_id, answer_id, comment_id):
         RETURNING question_id;
     """, {'question_id': question_id, 'answer_id': answer_id, 'comment_id': comment_id})
     cursor.fetchall()
+
+
+@connection.connection_handler
+def get_single_vote(cursor, user_id, question_id, answer_id):
+    cursor.execute("""
+        SELECT id FROM vote
+        WHERE user_id = %(user_id)s AND (question_id = %(question_id)s OR answer_id = %(answer_id)s);
+    """, {'user_id': user_id, 'question_id': question_id, 'answer_id': answer_id})
+    return cursor.fetchall()
+
+
+@connection.connection_handler
+def add_new_vote(cursor, user_id, question_id, answer_id, value):
+    cursor.execute("""
+        INSERT INTO vote
+        (user_id, question_id, answer_id, value)
+        VALUES (%(user_id)s, %(question_id)s, %(answer_id)s, %(value)s);
+    """, {'user_id': user_id, 'question_id': question_id, 'answer_id': answer_id, 'value': value})
+
+
+@connection.connection_handler
+def update_vote_by_id(cursor, id, value):
+    cursor.execute("""
+        UPDATE vote
+        SET value = %(value)s
+        WHERE id = %(id)s;
+    """, {'value': value, 'id': id})

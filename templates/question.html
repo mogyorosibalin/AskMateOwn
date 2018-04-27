@@ -30,9 +30,9 @@
                 <article class="question single-question">
                     <aside class="question-aside">
                         <ul class="question-numbers">
-                            <li class="question-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                            <li class="question-vote-up"><a href="/question/{{ question.id }}/up" class="arrow{{ ' selected' if question.vote_value == 1 }}"><i class="fa fa-caret-up"></i></a></li>
                             <li class="question-votes"><span class="number">{{ question.vote_number }}</span></li>
-                            <li class="question-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                            <li class="question-vote-down"><a href="/question/{{ question.id }}/down" class="arrow{{ ' selected' if question.vote_value == -1 }}"><i class="fa fa-caret-down"></i></a></li>
                         </ul>
                     </aside>
                     <main class="question-main">
@@ -111,9 +111,9 @@
                 <article class="answer">
                     <aside class="answer-aside">
                         <ul class="answer-numbers">
-                            <li class="answer-vote-up"><a href="#" class="arrow"><i class="fa fa-caret-up"></i></a></li>
+                            <li class="answer-vote-up"><a href="/answer/{{ answer.id }}/up" class="arrow{{ ' selected' if answer.vote_value == 1 }}"><i class="fa fa-caret-up"></i></a></li>
                             <li class="answer-votes"><span class="number">{{ answer.vote_number }}</span></li>
-                            <li class="answer-vote-down"><a href="#" class="arrow"><i class="fa fa-caret-down"></i></a></li>
+                            <li class="answer-vote-down"><a href="/answer/{{ answer.id }}/down" class="arrow{{ ' selected' if answer.vote_value == -1 }}"><i class="fa fa-caret-down"></i></a></li>
                         </ul>
                     </aside>
                     <main class="answer-main">

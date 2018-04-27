@@ -262,6 +262,29 @@ def route_delete_comment(comment_id=None):
     return question_id
 
 
+@app.route('/<content_type>/<content_id>/<vote>')
+def route_vote(content_type=None, content_id=None, vote=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    if content_type in ["question", 'answer']:
+        if vote in ["up", "down"]:
+            value = 1 if vote == "up" else -1
+            if content_type == "question" and data_manager.get_single_question_by_id(content_id):
+                vote = data_manager.get_single_vote(user_logged_in["id"], content_id, None)
+                if vote:
+                    data_manager.update_vote_by_id(vote[0]["id"], value)
+                else:
+                    data_manager.add_new_vote(user_logged_in["id"], content_id, None, value)
+            if content_type == "answer" and data_manager.get_single_answer_by_id(content_id):
+                vote = data_manager.get_single_vote(user_logged_in["id"], None, content_id)
+                if vote:
+                    data_manager.update_vote_by_id(vote[0]["id"], value)
+                else:
+                    data_manager.add_new_vote(user_logged_in["id"], None, content_id, value)
+                content_id = data_manager.get_single_answer_by_id(content_id)[0]["question_id"]
+            return redirect('/question/{}'.format(content_id))
+    return redirect(url_for('route_page_not_found'))
+
+
 @app.errorhandler(404)
 def route_page_not_found(e):
     return render_template('404.html'), 404
