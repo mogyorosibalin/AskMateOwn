@@ -111,12 +111,7 @@ def route_display_question(question_id=None):
         user_logged_in = {"id": 0}
     question = util.get_full_single_question(user_logged_in["id"], question_id)
     if question:
-        answers = data_manager.get_all_answers_for_question(question_id)
-        for i in range(len(answers)):
-            vote = data_manager.get_vote_value(user_logged_in["id"], None, answers[i]["id"])
-            if vote:
-                answers[i]["vote_value"] = vote["value"]
-            answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
+        answers = util.get_full_answers(user_logged_in["id"], question_id)
         return render_template('question.html', question=question, answers=answers,
                                user_logged_in=util.get_data_from_session("user", False))
     return redirect('/list')
@@ -145,9 +140,7 @@ def route_edit_question(question_id=None):
             if question["user_id"] == user_logged_in["id"]:
                 error_messages = util.get_data_from_session("error_messages")
                 question["comments"] = data_manager.get_all_comments_by_id(question_id, None)
-                answers = data_manager.get_all_answers_for_question(question_id)
-                for i in range(len(answers)):
-                    answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
+                answers = util.get_full_answers(user_logged_in["id"], question_id)
                 return render_template('question.html', question=question, answers=answers,
                                        error_messages=error_messages,
                                        editing_question=True, user_logged_in=user_logged_in)
@@ -173,9 +166,7 @@ def route_new_answer(question_id=None):
         answer = util.get_data_from_session("answer")
         if question:
             error_messages = util.get_data_from_session("error_messages")
-            answers = data_manager.get_all_answers_for_question(question_id)
-            for i in range(len(answers)):
-                answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
+            answers = util.get_full_answers(user_logged_in["id"], question_id)
             return render_template('question.html', question=question, answers=answers, answer=answer,
                                    error_messages=error_messages,
                                    new_answer=True, user_logged_in=user_logged_in)
@@ -204,9 +195,7 @@ def route_edit_answer(question_id=None, answer_id=None):
                 if not answer:
                     answer = data_manager.get_single_answer_by_id(answer_id)[0]
                 error_messages = util.get_data_from_session("error_messages")
-                answers = data_manager.get_all_answers_for_question(question_id)
-                for i in range(len(answers)):
-                    answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
+                answers = util.get_full_answers(user_logged_in["id"], question_id)
                 return render_template('question.html', question=question, answers=answers, answer=answer,
                                        error_messages=error_messages,
                                        new_answer=True, user_logged_in=user_logged_in)

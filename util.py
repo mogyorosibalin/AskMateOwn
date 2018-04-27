@@ -76,3 +76,13 @@ def get_full_single_question(user_id, question_id):
         if vote:
             question["vote_value"] = vote["value"]
     return question
+
+
+def get_full_answers(user_id, question_id):
+    answers = data_manager.get_all_answers_for_question(question_id)
+    for i in range(len(answers)):
+        vote = data_manager.get_vote_value(user_id, None, answers[i]["id"])
+        if vote:
+            answers[i]["vote_value"] = vote["value"]
+        answers[i]["comments"] = data_manager.get_all_comments_by_id(None, answers[i]["id"])
+    return answers
