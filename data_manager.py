@@ -5,10 +5,22 @@ import util
 @connection.connection_handler
 def get_all_user(cursor):
     cursor.execute("""
-        SELECT * FROM users
+        SELECT * 
+        FROM users
         ORDER BY username;
     """)
     return cursor.fetchall()
+
+
+@connection.connection_handler
+def get_vote_value_for_reputation(cursor, question_id, answer_id, value):
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM vote
+        WHERE value = %(value)s AND (question_id = %(question_id)s OR answer_id = %(answer_id)s)
+        GROUP BY question_id;
+    """, {'question_id': question_id, 'answer_id': answer_id, 'value': value})
+    return cursor.fetchone()
 
 
 @connection.connection_handler
@@ -39,17 +51,37 @@ def add_new_user(cursor, user):
 
 
 @connection.connection_handler
-def get_all_questions(cursor):
+def get_all_questions(cursor, user_id=0):
     cursor.execute("""
         SELECT question.id, question.title, question.submission_time, question.view_number, users.username,
         (SELECT COALESCE(SUM(value), 0) FROM vote WHERE question_id = question.id) AS vote_number,
-        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number
+        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = question.id) AS answer_number,
+        (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * 5) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * 10) +
+          (COALESCE((SELECT COUNT(*)
+           FROM answer
+           WHERE user_id = users.id AND accepted AND NOT deleted
+           GROUP BY id), 0) * 15) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * -2) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * -2) as user_reputation
         FROM (question
         INNER JOIN users ON question.user_id = users.id)
-        WHERE question.deleted is FALSE
-        GROUP BY question.id, users.username
+        WHERE question.deleted is FALSE {}
+        GROUP BY question.id, users.username, users.id
         ORDER BY question.submission_time DESC;
-    """)
+    """.format('AND users.id = %(user_id)s' if user_id else ''), {'user_id': user_id})
     return cursor.fetchall()
 
 
@@ -59,7 +91,27 @@ def get_single_question_by_id(cursor, question_id):
     cursor.execute("""
         SELECT question.id, question.title, question.message, question.submission_time, users.username, users.id AS user_id,
         (SELECT COALESCE(SUM(value), 0) FROM vote WHERE question_id = question.id) AS vote_number,
-        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = %(question_id)s) AS answer_number
+        (SELECT COUNT(*) FROM answer WHERE deleted = FALSE AND question_id = %(question_id)s) AS answer_number,
+        (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * 5) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * 10) +
+          (COALESCE((SELECT COUNT(*)
+           FROM answer
+           WHERE user_id = users.id AND accepted AND NOT deleted
+           GROUP BY id), 0) * 15) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * -2) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * -2) as user_reputation
         FROM (question
         INNER JOIN users ON question.user_id = users.id)
         WHERE question.id = %(question_id)s AND question.deleted is FALSE
@@ -72,8 +124,28 @@ def get_single_question_by_id(cursor, question_id):
 @connection.connection_handler
 def get_all_answers_for_question(cursor, question_id):
     cursor.execute("""
-        SELECT answer.id, answer.message, answer.submission_time, users.username, users.id AS user_id,
-        (SELECT COALESCE(SUM(value), 0) FROM vote WHERE answer_id = answer.id) AS vote_number
+        SELECT answer.id, answer.message, answer.submission_time, answer.accepted, users.username, users.id AS user_id,
+        (SELECT COALESCE(SUM(value), 0) FROM vote WHERE answer_id = answer.id) AS vote_number,
+        (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * 5) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = 1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * 10) +
+          (COALESCE((SELECT COUNT(*)
+           FROM answer
+           WHERE user_id = users.id AND accepted AND NOT deleted
+           GROUP BY id), 0) * 15) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND question_id IN (SELECT id FROM question WHERE user_id = users.id AND NOT deleted)
+           GROUP BY question_id), 0) * -2) +
+          (COALESCE((SELECT COUNT(*)
+           FROM vote
+           WHERE value = -1 AND answer_id IN (SELECT id FROM answer WHERE user_id = users.id AND NOT deleted)
+           GROUP BY answer_id), 0) * -2) as user_reputation
         FROM ((answer
         INNER JOIN question ON answer.question_id = question.id)
         INNER JOIN users ON answer.user_id = users.id)
@@ -156,6 +228,15 @@ def update_answer_by_id(cursor, answer_id, answer):
         SET message = %(message)s
         WHERE id = %(id)s;
     """, {'message': answer["message"], 'id': answer_id})
+
+
+@connection.connection_handler
+def update_answer_to_accepted(cursor, answer_id):
+    cursor.execute("""
+        UPDATE answer
+        SET accepted = TRUE
+        WHERE id = %(answer_id)s;
+    """, {'answer_id': answer_id})
 
 
 @connection.connection_handler

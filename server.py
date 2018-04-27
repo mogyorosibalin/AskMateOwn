@@ -64,6 +64,17 @@ def route_login():
 @app.route('/list-users')
 def route_list_users():
     users = data_manager.get_all_user()
+    for i in range(len(users)):
+        question_ids = [question["id"] for question in data_manager.get_all_questions(user_id=users[i]["id"])]
+        reputation = 0
+        for question_id in question_ids:
+            vote_up_count = data_manager.get_vote_value_for_reputation(question_id, None, 1)
+            vote_down_count = data_manager.get_vote_value_for_reputation(question_id, None, -1)
+            if vote_up_count:
+                reputation += vote_up_count["count"] * 5
+            if vote_down_count:
+                reputation -= vote_down_count["count"] * -2
+        print("reputation", reputation)
     return render_template('list-users.html', users=users,
                            user_logged_in=util.get_data_from_session("user", False))
 
@@ -223,6 +234,21 @@ def route_delete_answer(answer_id=None):
             data_manager.delete_answer_by_id(answer_id)
             data_manager.delete_comments_by_id(None, answer_id, None)
         return redirect('/question/{}'.format(question_id))
+    return redirect('/list')
+
+
+@app.route('/answer/<answer_id>/accepted-answer')
+def route_accepted_answer(answer_id=None):
+    user_logged_in = util.get_data_from_session("user", False)
+    if not user_logged_in:
+        user_logged_in = {"id": 0}
+    answer = data_manager.get_single_answer_by_id(answer_id)
+    if answer:
+        answer = answer[0]
+        question = util.get_full_single_question(user_logged_in["id"], answer["question_id"])
+        if question["user_id"] == user_logged_in["id"]:
+            data_manager.update_answer_to_accepted(answer["id"])
+        return redirect('/question/{}'.format(answer["question_id"]))
     return redirect('/list')
 
 

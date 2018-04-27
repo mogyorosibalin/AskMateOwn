@@ -97,6 +97,9 @@ p {
 .button.cta-btn:hover {
     background-color: #5287FC;
 }
+.button.cta-btn.accept {
+    background-color: #49E54F;
+}
 
 .button.cta-btn i {
     width: 20px;
@@ -318,6 +321,11 @@ p {
 
 .question.single-question .question-aside .question-numbers li a.selected, .answer .answer-aside .answer-numbers li a.selected {
     color: #56A8E5;
+}
+
+.answer .answer-aside .answer-numbers li.answer-accepted {
+    color: #49E54F;
+    font-size: 36px;
 }
 
 .question.single-question .question-buttons, .answer .answer-buttons, .comment .comment-buttons {

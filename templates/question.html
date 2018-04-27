@@ -44,10 +44,10 @@
                         </ul>
                         <p class="question-message">{{ question.message }}</p>
                         <small class="question-details">
-                            Submitted on
+                            Asked on
                             <span class="question-submission-time">{{ question.submission_time }}</span>
                             by
-                            <span class="question-user">{{ question.username }}</span>
+                            <span class="question-user">{{ question.username }}({{ question.user_reputation }})</span>
                         </small>
                     </main>
                     {% if user_logged_in %}
@@ -114,19 +114,25 @@
                             <li class="answer-vote-up"><a href="/answer/{{ answer.id }}/up" class="arrow{{ ' selected' if answer.vote_value == 1 }}"><i class="fa fa-caret-up"></i></a></li>
                             <li class="answer-votes"><span class="number">{{ answer.vote_number }}</span></li>
                             <li class="answer-vote-down"><a href="/answer/{{ answer.id }}/down" class="arrow{{ ' selected' if answer.vote_value == -1 }}"><i class="fa fa-caret-down"></i></a></li>
+                            {% if answer.accepted %}
+                                <li class="answer-accepted"><i class="fa fa-check"></i></li>
+                            {% endif %}
                         </ul>
                     </aside>
                     <main class="answer-main">
                         <p class="answer-message">{{ answer.message }}</p>
                         <small class="answer-details">
-                            Submitted on
+                            Answered
                             <span class="answer-submission-time">{{ answer.submission_time }}</span>
                             by
-                            <span class="answer-user">{{ answer.username }}</span>
+                            <span class="answer-user">{{ answer.username }}({{ answer.user_reputation }})</span>
                         </small>
                     </main>
                     {% if user_logged_in %}
                         <aside class="answer-buttons">
+                            {% if question.user_id == user_logged_in.id and not answer.accepted %}
+                                <a class="button cta-btn accept" href="/answer/{{ answer.id }}/accepted-answer"><i class="fa fa-check"></i></a>
+                            {% endif %}
                             <a class="button cta-btn" onclick="add_comment_for_answer({{ question.id }}, {{ answer.id }})"><i class="fa fa-comment"></i></a>
                             {% if answer.user_id == user_logged_in.id %}
                                 <a class="button cta-btn" href="/question/{{ question.id }}/edit-answer/{{ answer.id }}"><i class="fa fa-edit"></i></a>
